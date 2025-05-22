@@ -4,13 +4,15 @@ from datetime import datetime
 from cryptography.hazmat.primitives import serialization, hashes
 from cryptography.hazmat.primitives.asymmetric import padding
 from cryptography.hazmat.backends import default_backend
+import os
+from dotenv import load_dotenv
+
+load_dotenv()
 
 class LicenseValidator:
-    def __init__(self, config_path):
-        with open(config_path, 'r') as f:
-            self.config = yaml.safe_load(f)
-        self.license_file = self.config['license_file']
-        self.public_key_file = self.config['public_key_file']
+    def __init__(self, config_path=None):
+        self.license_file = os.getenv("LICENSE_FILE", "./license.lic")
+        self.public_key_file = os.getenv("PUBLIC_KEY_FILE", "./marshal_public.pem")
         self.public_key = self._load_public_key()
 
     def _load_public_key(self):
@@ -34,7 +36,6 @@ class LicenseValidator:
         customer_email = license_data.get('customer_email')
         if isinstance(customer_email, str):
             customer_email = [customer_email]
-        # (Optional) Add logic here if you want to check for a specific email
         # Verify signature
         license_json = json.dumps(license_data, sort_keys=True).encode('utf-8')
         try:

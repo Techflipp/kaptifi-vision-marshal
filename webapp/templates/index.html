@@ -11,11 +11,16 @@
         <div class="subtitle">License Management & Status</div>
         <div class="time">Current time: <span id="currentTime"></span></div>
         <div id="status" class="status {{ 'valid' if valid else 'invalid' }}">
-            <strong>Status:</strong> {{ message }}
+            <strong>Status:</strong> {{ message }}<br>
+        </div>
+        <div class="license-info">
+            <div><strong>Modules:</strong> {{ modules|join(', ') if modules else '-' }}</div>
+            <div><strong>Issued On:</strong> {{ issued_on }}</div>
+            <div><strong>Expiry Date:</strong> {{ expiration }}</div>
         </div>
         <hr>
         <h2>Upload New License File</h2>
-        <form action="/upload_license" method="post" enctype="multipart/form-data">
+        <form action="/upload-license" method="post" enctype="multipart/form-data">
             <input type="file" name="file" id="fileInput" accept=".lic" required>
             <button type="submit">Upload License</button>
         </form>

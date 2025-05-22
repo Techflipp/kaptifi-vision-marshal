@@ -11,6 +11,7 @@ license_data = {
     "customer_id": "customer001",
     "customer_email": ["customer@example.com", "admin@example.com"],
     "modules": ["counting", "demographics"],
+    "issued_on":"22-05-2025",
     "expiration": "22-05-2026"
 }
 
