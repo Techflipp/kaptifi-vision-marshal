@@ -1,0 +1,15 @@
+{
+  "license": {
+    "customer_id": "customer001",
+    "customer_email": [
+      "customer@example.com",
+      "admin@example.com"
+    ],
+    "modules": [
+      "counting",
+      "demographics"
+    ],
+    "expiration": "22-05-2026"
+  },
+  "signature": "098b5ecb21f80657bda5c28f93d36e018abcb0bf6339a8f6f96403db510306f95e536426d1509c0819f6337e48a8d10ab8f8bc93b04795a122fd43aaa50b6e4c36457df48effc583b000e8136984dbce8aba4de664772f533ca9dfbd1d49c0ba99594239bc7992965c85c3e3bf67de5a89f18525c304b6a934c1f755ddefa88f610d8ba8ab1f37de219083fcd4fc088c6324508edfc934e8a01ce0b6ffdb59a6d7d7b7e1289db023e2c81273313460122eaa2799c0e77b24fa3f51201c71d7d31996d464dadf8b8adcb186746e7185d90bd4cf188aac075e803be9cfefdf44d5d9c74fa6756f61cc7a75ab7408cb31aecc16888d96476e98b0f284b9f5a1596d"
+}

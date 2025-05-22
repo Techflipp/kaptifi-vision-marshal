@@ -1,0 +1,5 @@
+# Marshal Core Configuration
+
+license_file: "./license.lic"
+public_key_file: "./marshal_public.pem"
+check_interval_seconds: 60 

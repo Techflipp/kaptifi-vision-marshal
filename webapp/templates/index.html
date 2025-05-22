@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Kaptifi Vision Marshal</title>
+    <link rel="stylesheet" href="/static/style.css">
+</head>
+<body>
+    <div class="main-center">
+        <h1>Kaptifi Vision Marshal</h1>
+        <div class="subtitle">License Management & Status</div>
+        <div class="time">Current time: <span id="currentTime"></span></div>
+        <div id="status" class="status {{ 'valid' if valid else 'invalid' }}">
+            <strong>Status:</strong> {{ message }}
+        </div>
+        <hr>
+        <h2>Upload New License File</h2>
+        <form action="/upload_license" method="post" enctype="multipart/form-data">
+            <input type="file" name="file" id="fileInput" accept=".lic" required>
+            <button type="submit">Upload License</button>
+        </form>
+        {% if upload_result %}
+            <div id="uploadResult">{{ upload_result }}</div>
+        {% endif %}
+        <div class="footer-note">&copy; {{ 2025 }} Kaptifi Vision. All rights reserved.</div>
+    </div>
+    <script>
+    function showTime() {
+      document.getElementById('currentTime').textContent =
+        new Date().toLocaleString('en-GB').replace(',', '').replace(/\//g, '-');
+    }
+    showTime();
+    setInterval(showTime, 1000);
+    </script>
+</body>
+</html> 
