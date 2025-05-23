@@ -5,8 +5,8 @@ PORT=8000
 LOGS_DIR=./logs
 
 # License Configuration
-LICENSE_FILE=./config/kaptifi-vision-license.lic
-PUBLIC_KEY_FILE=./config/marshal_public.pem
+LICENSE_FILE=./certificates/license.lic
+CA_CERT_FILE=./certificates/ca_cert_public.pem
 
 # Logging Configuration
 LOG_LEVEL=INFO  # DEBUG/INFO/WARNING/ERROR/CRITICAL

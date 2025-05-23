@@ -36,7 +36,7 @@ def get_license_status():
         valid, message = validator.validate_license()
         
         # Get license file path
-        license_file = os.getenv("LICENSE_FILE", "./kaptifi-vision-license.lic")
+        license_file = os.getenv("LICENSE_FILE", "./certificates/license.lic")
         
         # Read license file
         with open(license_file, "r") as f:

@@ -4,12 +4,12 @@ services:
     build: .
     container_name: kaptifi-vision-marshal
     restart: always
-    command: uvicorn api.main:app --host ${HOST} --port ${PORT}
+    command: uvicorn api.main:app --host ${HOST} --port ${PORT} --workers 4 --timeout-keep-alive 60
     ports:
       - "8500:${PORT}"
     volumes:
       - ./logs_data:/app/logs
-      - ./config_data:/app/config
+      - ./certificates_data:/app/certificates
     env_file:
       - .env
 
