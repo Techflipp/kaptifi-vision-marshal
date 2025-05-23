@@ -11,9 +11,9 @@ from dotenv import load_dotenv
 load_dotenv()
 
 class LicenseValidator:
-    def __init__(self, config_path=None):
-        # Use environment variables for license and key paths
-        self.license_file = os.getenv("LICENSE_FILE", "./license.lic")
+    def __init__(self, license_path=None, config_path=None):
+        # Use provided license path or environment variable
+        self.license_file = license_path or os.getenv("LICENSE_FILE", "./license.lic")
         self.public_key_file = os.getenv("PUBLIC_KEY_FILE", "./marshal_public.pem")
         self.public_key = self._load_public_key()
 

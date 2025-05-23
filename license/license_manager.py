@@ -9,13 +9,10 @@ from dotenv import load_dotenv
 # Import logging
 from helper.logger import setup_logger
 
-# Load environment variables
-load_dotenv()
-
 # Import existing validator
-from core.license_validator import LicenseValidator
+from license.license_validator import LicenseValidator
 
-class MarshalService:
+class LicenseService:
     def __init__(self, 
                  license_file=None, 
                  deployment_path=None):
@@ -24,7 +21,7 @@ class MarshalService:
         self.deployment_path = deployment_path or os.getenv('DEPLOYMENT_PATH', '/home/kaptifi-vision')
         
         # Setup logger
-        self.logger = setup_logger(name='marshal_service')
+        self.logger = setup_logger(name='license_service')
         
         # Initialize validator and other attributes
         self.validator = LicenseValidator()
@@ -99,7 +96,7 @@ class MarshalService:
                 time.sleep(3600)
 
     def start(self):
-        """Start the marshal service."""
+        """Start the license service."""
         # Start license checking in a separate thread
         license_thread = Thread(target=self.run_license_check)
         license_thread.start()
@@ -107,6 +104,6 @@ class MarshalService:
         return license_thread
 
     def stop(self):
-        """Stop the marshal service."""
+        """Stop the license service."""
         self.stop_event.set()
-        self.logger.info("Marshal service stopped.") 
+        self.logger.info("License service stopped.") 

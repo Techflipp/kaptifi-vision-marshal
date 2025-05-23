@@ -10,7 +10,7 @@ from dotenv import load_dotenv
 from helper.logger import setup_logger
 
 # Import validator
-from core.license_validator import LicenseValidator
+from license.license_validator import LicenseValidator
 
 # Load environment variables
 load_dotenv()
@@ -83,16 +83,28 @@ async def upload_license(request: Request, file: UploadFile = File(...)):
         if not file.filename.lower().endswith('.lic'):
             return RedirectResponse(url="/?upload_result=Invalid file type. Please upload a .lic file.", status_code=303)
         
-        # Save the uploaded file
-        with open(LICENSE_FILE, "wb") as buffer:
+        # Create a temporary file for validation
+        temp_license_file = LICENSE_FILE + '.temp'
+        with open(temp_license_file, "wb") as buffer:
             shutil.copyfileobj(file.file, buffer)
         
-        # Validate the license
+        # Validate the temporary license file
         try:
-            valid, message = validator.validate_license()
+            # Use a separate validator instance to check the temp file
+            temp_validator = LicenseValidator(license_path=temp_license_file)
+            valid, message = temp_validator.validate_license()
+            
             if not valid:
+                # Remove the temporary file
+                os.unlink(temp_license_file)
                 return RedirectResponse(url=f"/?upload_result=Invalid license: {message}", status_code=303)
+            
+            # If valid, replace the existing license file
+            shutil.move(temp_license_file, LICENSE_FILE)
         except Exception as e:
+            # Remove the temporary file
+            if os.path.exists(temp_license_file):
+                os.unlink(temp_license_file)
             return RedirectResponse(url="/?upload_result=License validation failed.", status_code=303)
         
         # Redirect to home with success message

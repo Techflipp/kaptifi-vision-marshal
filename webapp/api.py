@@ -4,7 +4,7 @@ from typing import List, Optional
 import os
 import json
 import shutil
-from core.license_validator import LicenseValidator
+from license.license_validator import LicenseValidator
 from dotenv import load_dotenv
 
 # Import logger
