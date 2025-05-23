@@ -8,6 +8,6 @@ services:
     ports:
       - "8500:${WEB_PORT}"
     volumes:
-      - .:/app
+      - /logs:/app/logs
     env_file:
       - .env
