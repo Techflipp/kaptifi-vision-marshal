@@ -1,5 +1,4 @@
 import json
-import yaml
 from datetime import datetime
 from cryptography.hazmat.primitives import serialization, hashes
 from cryptography.hazmat.primitives.asymmetric import padding
@@ -11,9 +10,8 @@ from dotenv import load_dotenv
 load_dotenv()
 
 class LicenseValidator:
-    def __init__(self, license_path=None, config_path=None):
-        # Use provided license path or environment variable
-        self.license_file = license_path or os.getenv("LICENSE_FILE", "./license.lic")
+    def __init__(self, license_path=None):
+        self.license_file = license_path or os.getenv("LICENSE_FILE", "./kaptifi-vision-license.lic")
         self.public_key_file = os.getenv("PUBLIC_KEY_FILE", "./marshal_public.pem")
         self.public_key = self._load_public_key()
 
@@ -23,21 +21,19 @@ class LicenseValidator:
 
     def _load_license(self):
         with open(self.license_file, 'r') as f:
-            license_package = json.load(f)
-        return license_package
+            return json.load(f)
 
     def validate_license(self):
+        """Core license validation logic"""
         license_package = self._load_license()
         license_data = license_package['license']
         signature = bytes.fromhex(license_package['signature'])
-        # Check expiration (now expects dd-mm-yyyy)
+        
+        # Check expiration
         expiration = datetime.strptime(license_data['expiration'], '%d-%m-%Y')
         if expiration < datetime.utcnow():
             return False, 'License expired'
-        # Accept customer_email as list or string
-        customer_email = license_data.get('customer_email')
-        if isinstance(customer_email, str):
-            customer_email = [customer_email]
+            
         # Verify signature
         license_json = json.dumps(license_data, sort_keys=True).encode('utf-8')
         try:
@@ -50,6 +46,6 @@ class LicenseValidator:
                 ),
                 hashes.SHA256()
             )
+            return True, 'License valid'
         except Exception as e:
-            return False, f'Signature verification failed: {e}'
-        return True, 'License valid' 
+            return False, f'Signature verification failed: {e}' 

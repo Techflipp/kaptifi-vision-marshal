@@ -16,7 +16,7 @@ from license.license_validator import LicenseValidator
 load_dotenv()
 
 # Get license file path from environment
-LICENSE_FILE = os.getenv("LICENSE_FILE", "./license.lic")
+LICENSE_FILE = os.getenv("LICENSE_FILE", "./kaptifi-vision-license.lic")
 
 # Create a router for web routes
 router = APIRouter()

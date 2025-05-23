@@ -14,7 +14,7 @@ from helper.logger import setup_logger
 load_dotenv()
 
 # Get license file path from environment
-LICENSE_FILE = os.getenv("LICENSE_FILE", "./license.lic")
+LICENSE_FILE = os.getenv("LICENSE_FILE", "./kaptifi-vision-license.lic")
 
 # Create a router for API routes
 router = APIRouter(prefix="/api/v1")

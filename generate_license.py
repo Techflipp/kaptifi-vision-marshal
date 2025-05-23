@@ -31,8 +31,8 @@ license_package = {
     "signature": signature.hex()
 }
 
-# Write to license.lic
-with open("license.lic", "w") as f:
+# Write to kaptifi-vision-license.lic
+with open("kaptifi-vision-license.lic", "w") as f:
     json.dump(license_package, f, indent=2)
 
-print("license.lic generated successfully.")
+print("kaptifi-vision-license.lic generated successfully.")

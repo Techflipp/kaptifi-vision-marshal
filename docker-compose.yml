@@ -1,0 +1,13 @@
+version: '3.8'
+services:
+  kaptifi-vision-marshal:
+    build: .
+    container_name: kaptifi-vision-marshal
+    restart: always
+    command: uvicorn webapp.main:app --host ${WEB_HOST} --port ${WEB_PORT}
+    ports:
+      - "8500:${WEB_PORT}"
+    volumes:
+      - .:/app
+    env_file:
+      - .env
