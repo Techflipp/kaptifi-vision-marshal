@@ -12,7 +12,7 @@ license_data = {
     "customer_email": ["customer@example.com", "admin@example.com"],
     "modules": ["counting", "demographics"],
     "issued_on":"22-05-2025",
-    "expiration": "22-05-2026"
+    "expiration": "22-05-2024"
 }
 
 # Create the signature

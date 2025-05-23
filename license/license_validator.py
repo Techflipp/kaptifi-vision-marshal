@@ -10,33 +10,42 @@ from dotenv import load_dotenv
 load_dotenv()
 
 class LicenseValidator:
-    def __init__(self, license_path=None):
-        self.license_file = license_path or os.getenv("LICENSE_FILE", "./kaptifi-vision-license.lic")
-        self.public_key_file = os.getenv("PUBLIC_KEY_FILE", "./marshal_public.pem")
+    def __init__(self, license_path=None, public_key_path=None):
+        self.license_file = license_path or os.getenv("LICENSE_FILE", "./config/kaptifi-vision-license.lic")
+        self.public_key_file = public_key_path or os.getenv("PUBLIC_KEY_FILE", "./config/marshal_public.pem")
         self.public_key = self._load_public_key()
 
     def _load_public_key(self):
-        with open(self.public_key_file, 'rb') as f:
-            return serialization.load_pem_public_key(f.read(), backend=default_backend())
+        try:
+            with open(self.public_key_file, 'rb') as f:
+                return serialization.load_pem_public_key(
+                    f.read(),
+                    backend=default_backend()
+                )
+        except Exception as e:
+            raise RuntimeError(f"Failed to load public key: {str(e)}")
 
     def _load_license(self):
-        with open(self.license_file, 'r') as f:
-            return json.load(f)
+        try:
+            with open(self.license_file, 'r') as f:
+                return json.load(f)
+        except Exception as e:
+            raise RuntimeError(f"Failed to load license: {str(e)}")
 
     def validate_license(self):
         """Core license validation logic"""
-        license_package = self._load_license()
-        license_data = license_package['license']
-        signature = bytes.fromhex(license_package['signature'])
-        
-        # Check expiration
-        expiration = datetime.strptime(license_data['expiration'], '%d-%m-%Y')
-        if expiration < datetime.utcnow():
-            return False, 'License expired'
-            
-        # Verify signature
-        license_json = json.dumps(license_data, sort_keys=True).encode('utf-8')
         try:
+            license_package = self._load_license()
+            license_data = license_package['license']
+            signature = bytes.fromhex(license_package['signature'])
+            
+            # Check expiration
+            expiration = datetime.strptime(license_data['expiration'], '%d-%m-%Y')
+            if expiration < datetime.utcnow():
+                return False, 'License expired'
+                
+            # Verify signature
+            license_json = json.dumps(license_data, sort_keys=True).encode('utf-8')
             self.public_key.verify(
                 signature,
                 license_json,
@@ -48,4 +57,4 @@ class LicenseValidator:
             )
             return True, 'License valid'
         except Exception as e:
-            return False, f'Signature verification failed: {e}' 
+            return False, f'Validation failed: {str(e)}' 

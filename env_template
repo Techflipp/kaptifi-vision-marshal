@@ -1,5 +1,12 @@
-DEBUG_MODE=True
+# License API Configuration
+DEBUG_MODE=false
+HOST=0.0.0.0
+PORT=8000
 LOGS_DIR=./logs
-WEB_HOST=0.0.0.0
-WEB_PORT=8000
-PUBLIC_KEY_FILE=./marshal_public.pem
+
+# License Configuration
+LICENSE_FILE=./config/kaptifi-vision-license.lic
+PUBLIC_KEY_FILE=./config/marshal_public.pem
+
+# Logging Configuration
+LOG_LEVEL=INFO  # DEBUG/INFO/WARNING/ERROR/CRITICAL
