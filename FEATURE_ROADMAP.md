@@ -1,134 +1,113 @@
 # Kaptifi-Vision-Marshal Feature Roadmap
 
-## Status
-- License File Format & Generator Tool: **In Progress**
-- License Validator & Monitor (Marshal Core): Pending
-- Distributed Watchdog Client: Pending
-- Email Notifier & Data Deletion: Pending
-- Customer & License Management Web App: Pending
+## Project Status Overview
+- **Current Phase**: Core Functionality and Architectural Refinement
+- **Primary Focus**: Robust, Offline-First License Management System with Enhanced Logging and Modularity
 
-> Status updates are tracked here only. The README will not include status updates.
+## Completed Features
+### 1. License Management Core
+- [x] License Generation Mechanism
+  - Cryptographically signed license files
+  - Support for customer details, modules, and expiration
+  - Flexible license creation via `generate_license.py`
 
-### Module Checklist
-- [x] Project structure modularized (folders created)
-- [ ] License Generator
-- [ ] Marshal Core (Validator & Monitor)
+### 2. License Validation System
+- [x] Offline Validation Architecture
+  - Public key-based signature verification
+  - Expiration date checking
+  - Modular validation logic in `core/license_validator.py`
+
+### 3. Web Interface
+- [x] Comprehensive License Management Web UI
+  - FastAPI-powered backend
+  - Separated web routes and API routes
+  - License upload functionality
+  - Real-time license status display
+  - Clean, minimal HTML/CSS interface
+
+### 4. Project Infrastructure
+- [x] Advanced Project Structure
+  - Modular architecture with clear separation of concerns
+  - Environment-based configuration
+  - Comprehensive logging system
+  - Dependency management via `requirements.txt`
+
+### 5. Logging and Monitoring
+- [x] Centralized Logging Mechanism
+  - Configurable log levels
+  - Rotating file handlers
+  - Detailed logging for web routes and API endpoints
+  - Separate loggers for different application components
+
+## Pending Features
+### 1. Advanced License Management
 - [ ] Distributed Watchdog Client
-- [ ] Email Notifier & Data Deletion
-- [ ] Customer & License Management Web App
+  - Container monitoring mechanisms
+  - Anti-bypass heartbeat checks
+  - Integration with Docker/Kubernetes
 
-## Overview
-Kaptifi-Vision-Marshal is a simple license controller for on-premise deployments of the Kaptifi-Vision project. It manages access to modules like object counting and demographics based on subscription periods.
+### 2. Notification and Compliance
+- [ ] Enhanced Notification System
+  - Automated license expiry reminders
+  - Grace period communication
+  - Multiple notification channels (email, webhook)
+  - Customer contact management
 
-## Simplified Approach
-We'll implement a primarily offline license system with minimal complexity, focusing on reliability and ease of use.
+### 3. Data Management
+- [ ] Secure Data Deletion Module
+  - Automated cleanup post-license expiration
+  - Secure erasure of sensitive information
+  - Configurable deletion targets
+  - Audit logging for deletion events
 
-## How It Works: Customer Journey
+### 4. Enhanced Web Interface
+- [ ] Advanced Admin Dashboard
+  - Comprehensive license management
+  - Customer profile tracking
+  - Detailed license usage analytics
+  - Renewal workflow
 
-### 1. License Creation & Deployment
-- **When:** Customer purchases a subscription
-- **What happens:**
-  - You generate a license file with expiration date and enabled modules
-  - License file is encrypted with a private key only you possess
-  - Customer receives the license file to deploy with their system
-  - The license file contains: customer ID, expiration date, enabled modules, and customer email
-
-### 2. System Installation
-- Customer installs Kaptifi-Vision with the Marshal component
-- During installation, they provide the license file
-- Marshal validates the license file using a built-in public key
-- If valid, system activates and stores the license locally
-
-### 3. Daily Operation & Monitoring
-- Marshal continuously monitors running containers (not just on restarts)
-- Marshal checks the license file at regular intervals
-- If license is valid, containers operate normally
-- If expired, containers are stopped and a grace period begins
-- Email reminders are sent to the customer before expiry and during the grace period
-
-### 4. Grace Period & Data Deletion
-- System enters a 7-day grace period after license expiry
-- During grace period, email reminders are sent
-- If license is not renewed within 7 days, Marshal securely deletes all related data:
-  - Local files
-  - Database
-  - Docker registry
-  - Everything in the deployment folder related to Kaptifi-Vision
-
-### 5. License Renewal & Offline Update
-- **Option 1: Fully Offline Renewal**
-  - Customer contacts you when renewal is needed
-  - You generate a new license file with extended expiration
-  - Customer replaces the old license file manually (offline update)
-  
-- **Option 2: Simple Online Renewal** (optional)
-  - Customer clicks "Renew License" in admin interface
-  - System connects to your license server (if internet available)
-  - New license is downloaded and installed automatically
-
-### 6. Distributed License Watchdog (Anti-Bypass)
-- Marshal exposes license status and heartbeat (via local API or signed status file in shared volume)
-- Each module container (e.g., counting, demographics) includes a watchdog client
-- Module containers check Marshal's status at intervals (e.g., every minute)
-- If Marshal is removed, unreachable, or license is invalid, modules stop themselves
-- Status communication is cryptographically protected to prevent spoofing
-
-## Core Components
-
-### 1. License Generator (Your Tool)
-- Simple command-line or web tool you use internally
-- Inputs: customer ID, subscription end date, enabled modules, customer email
-- Output: encrypted license file for customer
-
-### 2. License Validator & Monitor (Part of Marshal)
-- Built into the Marshal component
-- Reads and validates license file using public key
-- Checks system date against expiration date
-- Continuously monitors containers and license validity
-- Controls container startup and running state based on validity
-- Triggers data deletion after grace period
-
-### 3. Email Notifier
-- Stores customer email from config/license
-- Sends automated reminders before expiry and during grace period
-
-### 4. Container Control
-- Simple integration with Docker/Kubernetes
-- Prevents container startup and stops running containers when license is invalid
-- Provides clear error messages about license status
-
-### 5. Data Deletion Module
-- Securely deletes all related data after grace period if license is not renewed
-
-### 6. Distributed Watchdog Client
-- Lightweight client in each module container
-- Checks Marshal's status/heartbeat at intervals
-- Stops module container if Marshal is missing or license is invalid
-
-### 7. Customer & License Management Web App
-- Simple web application (e.g., Django)
-- UI to manage customer list and generate license files
-- Central place for license creation, renewal, and customer management
-
-## Security Considerations (Simplified)
-- Use standard encryption (RSA or similar) for license files
-- Include basic hardware identifier to prevent license copying
-- Implement simple system date validation to detect clock manipulation
-- Secure deletion of sensitive data after grace period
-- Cryptographically protect status/heartbeat communication
+## Security Roadmap
+- [x] Cryptographic License Signing
+- [x] Offline Validation Mechanism
+- [x] Centralized Logging for Audit Trail
+- [ ] Enhanced Anti-Tampering Measures
+- [ ] Secure Deletion Protocols
+- [ ] Comprehensive Access Logging
 
 ## Implementation Timeline
-1. **Week 1-2:** Develop license file format and generator tool (with email field)
-2. **Week 3-4:** Implement license validator, container monitor, and email notifier in Marshal
-3. **Week 5-6:** Integrate with container startup/running process, data deletion module, and distributed watchdog client
-4. **Week 7-8:** Develop simple web app for customer/license management
-5. **Week 9:** Testing and refinement
+- **Completed**:
+  1. Weeks 1-2: License generation and core validation
+  2. Weeks 3-4: Web interface and basic infrastructure
+  3. Weeks 5-6: Logging and architectural refinement
+- **Pending**:
+  4. Weeks 7-8: Watchdog and notification systems
+  5. Weeks 9-10: Advanced UI and data management features
 
-## Benefits of This Approach
-- Works completely offline after initial deployment
-- Simple to understand and maintain
-- Minimal points of failure
-- Easy for customers to manage
-- No complex online verification systems to build
-- Automated reminders and secure data handling for compliance
-- Tamper-resistant and robust against bypass attempts 
+## Architectural Principles
+- Offline-first design
+- Minimal external dependencies
+- Cryptographically secure
+- Modular and extensible architecture
+- Comprehensive logging and monitoring
+
+## Next Immediate Steps
+1. Implement distributed watchdog client
+2. Develop multi-channel notification mechanism
+3. Create secure data deletion module
+4. Enhance web interface with advanced features
+5. Implement comprehensive security logging
+
+## Potential Future Enhancements
+- Cloud synchronization option
+- More granular module-level licensing
+- Advanced reporting and analytics
+- Multi-tenant support
+- Machine learning-based anomaly detection
+
+## Deployment Considerations
+- Support for Docker and Docker Compose
+- Minimal system resource footprint
+- Easy upgradability
+- Comprehensive logging and monitoring
+- Scalable architecture for enterprise use 
