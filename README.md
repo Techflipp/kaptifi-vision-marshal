@@ -74,7 +74,7 @@ openssl x509 -in certificates/ca_cert_public.pem -text -noout
 customer_info = {
     "company": "Customer Company",
     "country": "SA",
-    "license_id": "LIC-2024-XXX"
+    "organization_id": "611bac12-becd-45fa-b55d-e233650f4d54"
 }
 ```
 
@@ -91,7 +91,7 @@ customer_info = {
 {
     "certificate": "BASE64_ENCODED_CUSTOMER_CERT",
     "license": {
-        "customer_id": "LIC-2024-XXX",
+        "organization_id": "611bac12-becd-45fa-b55d-e233650f4d54",
         "modules": [
             "counting",
             "demographics"
@@ -129,7 +129,7 @@ customer_info = {
    - Decode customer certificate
    - Verify license signature
    - Check expiration dates
-   - Validate customer ID match
+   - Validate organization ID match
    - Confirm module permissions
 
 3. **Security Checks:**
@@ -143,7 +143,7 @@ customer_info = {
 - Invalid signature
 - Tampered license
 - Missing modules
-- Invalid customer ID
+- Invalid organization ID
 
 ## Security Considerations
 
@@ -190,7 +190,7 @@ certificates/
 {
     "valid": true,
     "message": "License valid",
-    "customer_id": "LIC-2024-XXX",
+    "organization_id": "611bac12-becd-45fa-b55d-e233650f4d54",
     "modules": ["counting", "demographics"],
     "issued_on": "2024-01-01",
     "expiration": "2025-12-31"

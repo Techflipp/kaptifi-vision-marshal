@@ -31,7 +31,7 @@ def generate_ca(cert_dir):
     ).not_valid_before(
         datetime.utcnow()
     ).not_valid_after(
-        datetime.utcnow() + timedelta(days=3650)  # 10 years
+        datetime.utcnow() + timedelta(days=365)  # 1 year
     ).add_extension(
         x509.BasicConstraints(ca=True, path_length=None), critical=True
     ).sign(ca_key, hashes.SHA256())
@@ -61,8 +61,8 @@ def generate_customer_certificate(ca_key, ca_cert, customer_info, cert_dir):
     # Create certificate
     subject = x509.Name([
         x509.NameAttribute(NameOID.COUNTRY_NAME, customer_info.get('country', 'SA')),
-        x509.NameAttribute(NameOID.ORGANIZATION_NAME, customer_info['company']),
-        x509.NameAttribute(NameOID.SERIAL_NUMBER, customer_info['license_id'])
+        x509.NameAttribute(NameOID.ORGANIZATION_NAME, customer_info['organization_name']),
+        x509.NameAttribute(NameOID.SERIAL_NUMBER, customer_info['organization_id'])
     ])
 
     cert = x509.CertificateBuilder().subject_name(
@@ -110,9 +110,9 @@ if __name__ == "__main__":
 
     # Example customer
     customer_info = {
-        "company": "Example Corporation",  # Only company name retained
-        "country": "SA",  # Updated to Saudi Arabia
-        "license_id": "LIC-2024-001"
+        "organization_name": "Example Corporation",
+        "country": "SA",
+        "organization_id": "611bac12-becd-45fa-b55d-e233650f4d54"
     }
 
     # Generate customer certificate

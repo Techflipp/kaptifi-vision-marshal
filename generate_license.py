@@ -26,7 +26,7 @@ def generate_license(customer_cert_path, customer_key_path, license_data):
             customer_cert.public_bytes(serialization.Encoding.PEM)
         ).decode('utf-8'),
         "license": {
-            "customer_id": license_data["customer_id"],
+            "organization_id": license_data["organization_id"],
             "modules": license_data["modules"],
             "issued_on": datetime.utcnow().strftime("%Y-%m-%d"),
             "expiration": license_data["expiration"]
@@ -52,8 +52,8 @@ def generate_license(customer_cert_path, customer_key_path, license_data):
 if __name__ == "__main__":
     # Example license data
     license_data = {
-        "customer_id": "LIC-2024-001",  # Must match the certificate's license_id
-        "modules": ["counting", "demographics"],
+        "organization_id": "611bac12-becd-45fa-b55d-e233650f4d54",  # Must match the certificate's organization_id
+        "modules": [ "frame_producer", "object_counting", "demographics"],
         "expiration": "2025-12-31"
     }
     

@@ -15,7 +15,7 @@ class LicenseInfo(BaseModel):
     """Structured response for license information."""
     valid: bool
     message: str
-    customer_id: Optional[str] = None
+    organization_id: Optional[str] = None
     modules: Optional[List[str]] = []
     issued_on: str
     expiration: str
@@ -49,7 +49,7 @@ def get_license_status():
         return LicenseInfo(
             valid=valid,
             message=message,
-            customer_id=license_data.get("customer_id"),
+            organization_id=license_data.get("organization_id"),
             modules=license_data.get("modules", []),
             issued_on=str(license_data.get("issued_on", "-")),
             expiration=str(license_data.get("expiration", "-"))

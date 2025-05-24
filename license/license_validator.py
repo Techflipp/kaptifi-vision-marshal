@@ -90,16 +90,16 @@ class LicenseValidator:
                 hashes.SHA256()
             )
             
-            # Extract customer ID from certificate
-            cert_customer_id = None
+            # Extract organization ID from certificate
+            cert_organization_id = None
             for attr in customer_cert.subject:
                 if attr.oid == NameOID.SERIAL_NUMBER:
-                    cert_customer_id = attr.value
+                    cert_organization_id = attr.value
                     break
             
-            # Verify customer ID matches
-            if cert_customer_id != license_data['customer_id']:
-                return False, 'Customer ID mismatch'
+            # Verify organization ID matches
+            if cert_organization_id != license_data['organization_id']:
+                return False, 'Organization ID mismatch'
             
             return True, 'License valid'
             
