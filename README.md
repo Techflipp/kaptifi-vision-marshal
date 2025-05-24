@@ -229,3 +229,154 @@ certificates/
 2. License updates
 3. Security audits
 4. Backup verification
+
+### **Certificate & License Validation System Documentation**  
+**Version 1.0**  
+
+---
+
+## **Overview**  
+This system ensures secure authentication and authorization for software licenses using Public Key Infrastructure (PKI). It combines X.509 certificates and cryptographically signed licenses to prevent forgery and tampering.  
+
+---
+
+## **Key Components**  
+
+### **1. Certificate Authority (CA)**  
+- **Files**:  
+  - `ca_private_key.pem` (Private Key): **Top secret**. Used to sign customer certificates.  
+  - `ca_cert_public.pem` (Public Certificate): Distributed to validate certificates.  
+- **Role**:  
+  - Acts as the **root of trust**.  
+  - Signs customer certificates to prove authenticity.  
+
+### **2. Customer Certificate**  
+- **Files**:  
+  - `customer_private_key.pem` (Private Key): Held by the customer. Signs licenses.  
+  - `customer_public_cert.pem` (Public Certificate): Embedded in licenses. Validated against the CA.  
+- **Role**:  
+  - Uniquely identifies a customer.  
+  - Binds the customer’s `organization_id` to their public key.  
+
+### **3. License File (`license.lic`)**  
+- **Structure**:  
+  ```json
+  {
+    "certificate": "<Base64-encoded customer certificate>",
+    "license": {
+      "organization_id": "...",
+      "modules": ["..."],
+      "expiration": "YYYY-MM-DD"
+    },
+    "signature": "<Hex-encoded signature>"
+  }
+  ```  
+- **Role**:  
+  - Grants access to specific software features.  
+  - Tamper-proof due to cryptographic signing.  
+
+---
+
+## **Workflow**  
+
+### **1. Certificate Generation**  
+```mermaid
+flowchart TB
+  subgraph CA Setup
+    A[Generate CA Private Key] --> B[Generate CA Certificate]
+  end
+  subgraph Customer Setup
+    C[Generate Customer Private Key] --> D[Generate Customer Certificate]
+    B -->|Signs| D
+  end
+```  
+- **Steps**:  
+  1. **CA Generates Root Certificate**:  
+     - Creates a self-signed certificate (`ca_cert_public.pem`).  
+  2. **Customer Certificate Issuance**:  
+     - Customer generates a key pair.  
+     - CA signs the customer’s certificate using `ca_private_key.pem`.  
+
+---
+
+### **2. License Generation**  
+```mermaid
+flowchart TB
+  subgraph License Creation
+    A[Customer Private Key] -->|Signs| B[License Data]
+    B --> C[license.lic]
+  end
+```  
+- **Steps**:  
+  1. **License Data**: JSON containing `organization_id`, `modules`, and `expiration`.  
+  2. **Signing**:  
+     - Customer signs the license JSON with their private key (`customer_private_key.pem`).  
+     - Signature is stored in `license.lic`.  
+
+---
+
+### **3. License Validation**  
+```mermaid
+flowchart TB
+  subgraph Validation
+    A[Load license.lic] --> B[Decode Certificate]
+    B --> C[Verify Certificate Chain]
+    C -->|Valid?| D[Check Expiration]
+    D --> E[Verify License Signature]
+    E -->|Valid?| F[Grant Access]
+  end
+```  
+- **Steps**:  
+  1. **Certificate Chain Validation**:  
+     - Verify `customer_public_cert.pem` is signed by the CA.  
+     - Uses `ca_cert_public.pem` to validate the signature.  
+  2. **License Validation**:  
+     - Verify the license signature using the customer’s public key (from their certificate).  
+     - Match `organization_id` in the license to the certificate.  
+
+---
+
+## **Security Model**  
+
+### **1. Protection Against Forged Certificates**  
+- **How**:  
+  - Attackers can’t create valid certificates without the CA’s private key (`ca_private_key.pem`).  
+  - Your system rejects certificates not signed by your CA.  
+
+### **2. Protection Against Tampered Licenses**  
+- **How**:  
+  - Any change to `license` (e.g., extending expiration) invalidates the signature.  
+  - Signature verification fails if data mismatches.  
+
+### **3. Key Compromise Scenarios**  
+| Scenario | Impact | Mitigation |  
+|----------|--------|------------|  
+| **CA Private Key Leaked** | Attackers can issue valid certificates. | Store offline, use HSMs, revoke CA. |  
+| **Customer Private Key Leaked** | Attackers can forge licenses for that customer. | Reissue certificates, revoke old ones. |  
+
+---
+
+## **Enhancements (Optional)**  
+1. **Sign Licenses with CA Key**:  
+   - Makes licenses harder to forge (requires CA compromise).  
+2. **Certificate Revocation**:  
+   - Maintain a revocation list (CRL) for blocked certificates.  
+3. **License Encryption**:  
+   - Encrypt licenses with the customer’s public key for confidentiality.  
+
+---
+
+## **FAQ**  
+
+### **Q: What if a hacker steals `license.lic`?**  
+- **A**: They can’t modify it without invalidating the signature. The system will reject tampered licenses.  
+
+### **Q: How do I revoke a customer’s access?**  
+- **A**: Today: Shorten license expiration. Future: Implement a revocation list.  
+
+### **Q: Why use customer keys to sign licenses?**  
+- **A**: Delegates responsibility to customers to protect their keys. For stricter control, sign licenses with your CA key instead.  
+
+---
+
+**Appendix**: Example validation code and certificate generation scripts are in the repository’s `/certificates` directory.
