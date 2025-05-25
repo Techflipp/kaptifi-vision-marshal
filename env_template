@@ -1,0 +1,12 @@
+# License API Configuration
+DEBUG_MODE=false
+HOST=0.0.0.0
+PORT=8000
+LOGS_DIR=./logs
+
+# License Configuration
+LICENSE_FILE=./certificates/license.lic
+CA_CERT_FILE=./certificates/ca_cert_public.pem
+
+# Logging Configuration
+LOG_LEVEL=INFO  # DEBUG/INFO/WARNING/ERROR/CRITICAL
