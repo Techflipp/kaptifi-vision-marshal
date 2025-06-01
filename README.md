@@ -1,382 +1,259 @@
-# Kaptifi Vision License Management - Detailed Guide
+# Kaptifi Vision Marshal - Customer Deployment
 
-## Journey Overview
+## Overview
 
-```mermaid
-journey
-    title License Management Journey
-    section 1. Initial Setup (One-time)
-        Generate CA certificates: 5: Company
-        Store CA private key: 5: Company
-        Distribute CA public cert: 3: Company
-    section 2. Customer Onboarding
-        Create customer certificate: 5: Company
-        Generate customer keys: 5: Company
-        Deliver to customer: 3: Company, Customer
-    section 3. License Creation
-        Receive certificate & keys: 5: Customer
-        Define permissions & dates: 5: Customer
-        Create signed license: 3: Customer
-    section 4. Runtime Validation
-        Load certificates: 5: System
-        Verify certificate chain: 5: System
-        Validate license: 5: System
-        Enable features: 3: System
+This is the **customer deployment** version of Kaptifi Vision Marshal - a license validation system for on-premise software deployments. This repository contains **only validation logic** and **no certificate or license generation capabilities** for security reasons.
+
+## 🔒 Security Notice
+
+**Certificate and License Generation Removed**
+
+For security reasons, this customer deployment does **NOT** include:
+- ❌ Certificate generation capabilities
+- ❌ License generation capabilities  
+- ❌ Private key management
+- ❌ CA setup tools
+
+All certificate and license generation is performed exclusively at **Kaptifi Marshal HQ**.
+
+## 🎯 What This Repository Contains
+
+### ✅ Included (Customer Deployment)
+- License validation engine
+- Certificate verification logic
+- API endpoints for license status
+- Health check endpoints
+- Dockerized deployment
+- Environment-based configuration
+
+### ❌ Not Included (HQ Only)
+- Certificate generation
+- License signing
+- Private key operations
+- CA management tools
+
+## 📁 File Structure
+
+```
+kaptifi-vision-marshal/
+├── api/                          # API endpoints
+│   ├── main.py                   # FastAPI application
+│   └── endpoints.py              # License validation endpoints
+├── license/                      # License validation logic
+│   └── license_validator.py     # Core validation engine
+├── helper/                       # Utility functions
+│   └── logger.py                 # Logging configuration
+├── certificates_data/            # Customer license files
+│   ├── license.lic              # License file
+│   └── org_cert_public.pem      # Organization certificate
+├── logs_data/                    # Application logs
+├── docker-compose.yml            # Docker deployment
+├── Dockerfile                    # Container configuration
+├── requirements.txt              # Python dependencies
+└── .env                         # Environment configuration
 ```
 
-## Detailed Process Breakdown
+## 🚀 Quick Start
 
-### 1. Initial Setup (One-time Company Setup)
+### 1. Environment Setup
 
-**Files Created:**
-- `ca_private_key.pem`: 
-  - 4096-bit RSA private key
-  - Used to sign all customer certificates
-  - MUST be kept secure and backed up
-  - Never shared with anyone
-
-- `ca_cert_public.pem`:
-  - Public certificate containing CA's identity
-  - Used to verify customer certificates
-  - Embedded in the application
-  - Valid for 10 years
-
-**Technical Process:**
+Copy the environment template:
 ```bash
-# Generate CA certificate
-python license/ca_setup.py
-
-# Verification
-openssl x509 -in certificates/ca_cert_public.pem -text -noout
+cp env_template .env
 ```
 
-### 2. Customer Onboarding
-
-**Files Generated:**
-- `customer_public_cert.pem`:
-  - Contains customer's identity
-  - Signed by CA private key
-  - Valid for 1 year
-  - Includes:
-    - Organization name
-    - Country (SA)
-    - License ID
-    - Public key
-
-- `customer_private_key.pem`:
-  - 2048-bit RSA private key
-  - Used to sign license files
-  - Must be protected by customer
-  - Never transmitted over network
-
-**Technical Process:**
-```python
-customer_info = {
-    "company": "Customer Company",
-    "country": "SA",
-    "organization_id": "611bac12-becd-45fa-b55d-e233650f4d54"
-}
+Configure your license files in `.env`:
+```bash
+# License Configuration
+LICENSE_FILE=./certificates_data/license.lic
+ORG_CERT_FILE=./certificates_data/org_cert_public.pem
 ```
 
-**Validation Checks:**
-- Certificate chain verification
-- Expiration date check
-- Organization name validation
-- Digital signature verification
+### 2. Install Dependencies
 
-### 3. License Creation
-
-**License File Structure (`license.lic`):**
-```json
-{
-    "certificate": "BASE64_ENCODED_CUSTOMER_CERT",
-    "license": {
-        "organization_id": "611bac12-becd-45fa-b55d-e233650f4d54",
-        "modules": [
-            "counting",
-            "demographics"
-        ],
-        "issued_on": "2024-01-01",
-        "expiration": "2025-12-31"
-    },
-    "signature": "DIGITAL_SIGNATURE_HEX"
-}
+```bash
+pip install -r requirements.txt
 ```
 
-**Technical Details:**
-- Certificate encoding: Base64
-- Signature algorithm: SHA-256 with PSS padding
-- Key format: PKCS#8
-- File format: JSON
+### 3. Deploy License Files
 
-**Generation Process:**
-1. Load customer certificate
-2. Create license data
-3. Sign with customer's private key
-4. Package all components
-5. Save as license.lic
+Place the files received from Kaptifi Marshal HQ:
+- `license.lic` - Your organization's license file
+- `org_cert_public.pem` - Your organization's certificate
 
-### 4. Runtime Validation
+### 4. Start the Service
 
-**Validation Steps:**
-1. **Certificate Chain Verification:**
-   - Load CA public certificate
-   - Verify customer certificate signature
-   - Check certificate dates
-   - Validate customer details
+**Using Docker (Recommended):**
+```bash
+docker-compose up -d
+```
 
-2. **License Validation:**
-   - Decode customer certificate
-   - Verify license signature
-   - Check expiration dates
-   - Validate organization ID match
-   - Confirm module permissions
+**Using Python directly:**
+```bash
+uvicorn api.main:app --host 0.0.0.0 --port 8000
+```
 
-3. **Security Checks:**
-   - Certificate integrity
-   - Signature authenticity
-   - Time validity
-   - Permission scope
+## 📡 API Endpoints
 
-**Error Handling:**
-- Certificate expired
-- Invalid signature
-- Tampered license
-- Missing modules
-- Invalid organization ID
+### Health Check
+```
+GET /
+```
+Returns basic service status.
 
-## Security Considerations
+### License Status
+```
+GET /api/v1/license
+```
+Returns detailed license validation information:
 
-### Private Key Protection
-- CA private key:
-  - Stored offline
-  - Access-controlled
-  - Encrypted storage
-  - Regular backup
-
-### Customer Key Management
-- Secure delivery process
-- Installation verification
-- Backup recommendations
-- Update procedures
-
-### License Security
-- Tamper-evident design
-- Digital signatures
-- Time-based validation
-- Module-level control
-
-## File Locations
-certificates/
-├── ca_cert_public.pem # CA's public certificate
-├── ca_private_key.pem # CA's private key (secured)
-├── customer_public_cert.pem # Customer's certificate
-├── customer_private_key.pem # Customer's private key
-└── license.lic # Active license file
-
-
-## API Integration
-
-**Endpoints:**
-- `GET /api/v1/license`: Check license status
-- Response includes:
-  - Validation status
-  - Certificate details
-  - Module permissions
-  - Expiration dates
-
-**Example Response:**
 ```json
 {
     "valid": true,
     "message": "License valid",
-    "organization_id": "611bac12-becd-45fa-b55d-e233650f4d54",
+    "organization_id": "your-org-id",
     "modules": ["counting", "demographics"],
     "issued_on": "2024-01-01",
     "expiration": "2025-12-31"
 }
 ```
 
-## Troubleshooting Guide
+## 🔍 License Validation Process
 
-### Common Issues:
-1. **Certificate Errors:**
-   - Expired certificate
-   - Invalid signature
-   - Chain verification failed
+The system performs comprehensive validation:
 
-2. **License Errors:**
-   - Expired license
-   - Invalid modules
-   - Signature mismatch
+### 1. Certificate Validation
+- ✅ Certificate format verification
+- ✅ Certificate expiration check
+- ✅ Organization identity verification
 
-3. **System Issues:**
-   - File permissions
-   - Missing certificates
-   - Invalid file format
+### 2. License Validation  
+- ✅ License signature verification
+- ✅ License expiration check
+- ✅ Organization ID matching
+- ✅ Module permissions verification
 
-### Resolution Steps:
-1. Verify file locations
-2. Check file permissions
-3. Validate dates
-4. Confirm signatures
-5. Review logs
+### 3. Security Checks
+- ✅ Cryptographic signature validation
+- ✅ Certificate-license binding verification
+- ✅ Tamper detection
+- ✅ Anti-forgery protection
 
-## Maintenance Procedures
+## 🛡️ Security Features
 
-### Regular Tasks:
-1. Certificate renewal
-2. License updates
-3. Security audits
-4. Backup verification
+### Backward Compatibility
+The validator supports both:
+- **Legacy Format**: License data only signatures (current)
+- **Secure Format**: Combined certificate + license signatures (future)
 
-### **Certificate & License Validation System Documentation**  
-**Version 1.0**  
+### Anti-Tampering
+- Digital signatures prevent license modification
+- Certificate binding prevents substitution attacks
+- Organization ID verification ensures proper licensing
 
----
+### Offline Validation
+- No external dependencies required
+- Self-contained validation process
+- Works in air-gapped environments
 
-## **Overview**  
-This system ensures secure authentication and authorization for software licenses using Public Key Infrastructure (PKI). It combines X.509 certificates and cryptographically signed licenses to prevent forgery and tampering.  
+## 🔧 Configuration
 
----
+### Environment Variables
 
-## **Key Components**  
+```bash
+# API Configuration
+DEBUG_MODE=false
+HOST=0.0.0.0
+PORT=8000
+LOGS_DIR=./logs_data
 
-### **1. Certificate Authority (CA)**  
-- **Files**:  
-  - `ca_private_key.pem` (Private Key): **Top secret**. Used to sign customer certificates.  
-  - `ca_cert_public.pem` (Public Certificate): Distributed to validate certificates.  
-- **Role**:  
-  - Acts as the **root of trust**.  
-  - Signs customer certificates to prove authenticity.  
+# License Configuration
+LICENSE_FILE=./certificates_data/license.lic
+ORG_CERT_FILE=./certificates_data/org_cert_public.pem
 
-### **2. Customer Certificate**  
-- **Files**:  
-  - `customer_private_key.pem` (Private Key): Held by the customer. Signs licenses.  
-  - `customer_public_cert.pem` (Public Certificate): Embedded in licenses. Validated against the CA.  
-- **Role**:  
-  - Uniquely identifies a customer.  
-  - Binds the customer’s `organization_id` to their public key.  
+# Logging Configuration
+LOG_LEVEL=INFO
+```
 
-### **3. License File (`license.lic`)**  
-- **Structure**:  
-  ```json
-  {
-    "certificate": "<Base64-encoded customer certificate>",
-    "license": {
-      "organization_id": "...",
-      "modules": ["..."],
-      "expiration": "YYYY-MM-DD"
-    },
-    "signature": "<Hex-encoded signature>"
-  }
-  ```  
-- **Role**:  
-  - Grants access to specific software features.  
-  - Tamper-proof due to cryptographic signing.  
+### Docker Configuration
 
----
+The service runs in a containerized environment with:
+- Volume mounts for license files
+- Volume mounts for logs
+- Environment variable configuration
+- Health check endpoints
 
-## **Workflow**  
+## 📊 Monitoring & Logs
 
-### **1. Certificate Generation**  
-```mermaid
-flowchart TB
-  subgraph CA Setup
-    A[Generate CA Private Key] --> B[Generate CA Certificate]
-  end
-  subgraph Customer Setup
-    C[Generate Customer Private Key] --> D[Generate Customer Certificate]
-    B -->|Signs| D
-  end
-```  
-- **Steps**:  
-  1. **CA Generates Root Certificate**:  
-     - Creates a self-signed certificate (`ca_cert_public.pem`).  
-  2. **Customer Certificate Issuance**:  
-     - Customer generates a key pair.  
-     - CA signs the customer’s certificate using `ca_private_key.pem`.  
+### Log Files
+- `logs_data/info.log` - General application logs
+- `logs_data/error.log` - Error and warning logs
 
----
+### Health Monitoring
+- Service status: `GET /`
+- License status: `GET /api/v1/license`
 
-### **2. License Generation**  
-```mermaid
-flowchart TB
-  subgraph License Creation
-    A[Customer Private Key] -->|Signs| B[License Data]
-    B --> C[license.lic]
-  end
-```  
-- **Steps**:  
-  1. **License Data**: JSON containing `organization_id`, `modules`, and `expiration`.  
-  2. **Signing**:  
-     - Customer signs the license JSON with their private key (`customer_private_key.pem`).  
-     - Signature is stored in `license.lic`.  
+## 🚨 Troubleshooting
 
----
+### Common Issues
 
-### **3. License Validation**  
-```mermaid
-flowchart TB
-  subgraph Validation
-    A[Load license.lic] --> B[Decode Certificate]
-    B --> C[Verify Certificate Chain]
-    C -->|Valid?| D[Check Expiration]
-    D --> E[Verify License Signature]
-    E -->|Valid?| F[Grant Access]
-  end
-```  
-- **Steps**:  
-  1. **Certificate Chain Validation**:  
-     - Verify `customer_public_cert.pem` is signed by the CA.  
-     - Uses `ca_cert_public.pem` to validate the signature.  
-  2. **License Validation**:  
-     - Verify the license signature using the customer’s public key (from their certificate).  
-     - Match `organization_id` in the license to the certificate.  
+**License Validation Failed**
+```bash
+# Check license file exists
+ls -la certificates_data/license.lic
 
----
+# Check certificate file exists  
+ls -la certificates_data/org_cert_public.pem
 
-## **Security Model**  
+# Check file permissions
+chmod 644 certificates_data/*
+```
 
-### **1. Protection Against Forged Certificates**  
-- **How**:  
-  - Attackers can’t create valid certificates without the CA’s private key (`ca_private_key.pem`).  
-  - Your system rejects certificates not signed by your CA.  
+**Certificate Not Found**
+- Ensure both `license.lic` and `org_cert_public.pem` are present
+- Verify file paths in `.env` configuration
+- Check file permissions
 
-### **2. Protection Against Tampered Licenses**  
-- **How**:  
-  - Any change to `license` (e.g., extending expiration) invalidates the signature.  
-  - Signature verification fails if data mismatches.  
+**Signature Verification Failed**
+- Verify certificate matches the license
+- Check for file corruption
+- Ensure files are from the same license package
 
-### **3. Key Compromise Scenarios**  
-| Scenario | Impact | Mitigation |  
-|----------|--------|------------|  
-| **CA Private Key Leaked** | Attackers can issue valid certificates. | Store offline, use HSMs, revoke CA. |  
-| **Customer Private Key Leaked** | Attackers can forge licenses for that customer. | Reissue certificates, revoke old ones. |  
+**License Expired**
+- Contact Kaptifi Marshal HQ for license renewal
+- Check system date/time accuracy
+
+### Getting Help
+
+For support:
+1. Check application logs in `logs_data/`
+2. Verify license status via API endpoint
+3. Contact Kaptifi Marshal HQ for license issues
+
+## 📞 Support
+
+For license generation, renewal, or technical support:
+- 📧 Contact: Kaptifi Marshal HQ
+- 🌐 License Management: Use Marshal HQ Django application
+- 🔧 Technical Issues: Check logs and API endpoints
+
+## 🔄 License Renewal
+
+When your license approaches expiration:
+1. Contact Kaptifi Marshal HQ
+2. Receive new license files
+3. Replace existing files in `certificates_data/`
+4. Restart the service
+5. Verify new license via API
+
+## ⚠️ Important Security Notes
+
+- **Never attempt to generate certificates locally**
+- **Keep certificate files secure and backed up**
+- **Monitor license expiration dates**
+- **Report any validation issues immediately**
+- **Only use license files from official Kaptifi Marshal HQ**
 
 ---
 
-## **Enhancements (Optional)**  
-1. **Sign Licenses with CA Key**:  
-   - Makes licenses harder to forge (requires CA compromise).  
-2. **Certificate Revocation**:  
-   - Maintain a revocation list (CRL) for blocked certificates.  
-3. **License Encryption**:  
-   - Encrypt licenses with the customer’s public key for confidentiality.  
-
----
-
-## **FAQ**  
-
-### **Q: What if a hacker steals `license.lic`?**  
-- **A**: They can’t modify it without invalidating the signature. The system will reject tampered licenses.  
-
-### **Q: How do I revoke a customer’s access?**  
-- **A**: Today: Shorten license expiration. Future: Implement a revocation list.  
-
-### **Q: Why use customer keys to sign licenses?**  
-- **A**: Delegates responsibility to customers to protect their keys. For stricter control, sign licenses with your CA key instead.  
-
----
-
-**Appendix**: Example validation code and certificate generation scripts are in the repository’s `/certificates` directory.
+**This deployment contains only validation capabilities. All certificate and license generation is performed exclusively at Kaptifi Marshal HQ for maximum security.**
