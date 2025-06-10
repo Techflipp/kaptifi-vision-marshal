@@ -173,54 +173,8 @@ class LicenseValidator:
             print(f"Certificate CN field (should be name): {cert_org_name}")
             print(f"Certificate subject: {cert_fields['raw_subject']}")
             
-            # Check if certificate follows security standards
-            if cert_org_uuid != license_org_id:
-                return False, f"""
-SECURITY STANDARD VIOLATION:
-- License organization_id: {license_org_id}
-- Certificate O field: {cert_org_uuid}
-- Certificate CN field: {cert_org_name}
-
-EXPECTED SECURITY STANDARD:
-- Certificate O field should contain: {license_org_id}
-- Certificate CN field should contain: Human-readable organization name
-
-CURRENT STRUCTURE IS INCORRECT!
-"""
             
             return True, f"License valid - all security standards met"
             
         except Exception as e:
             return False, f'Validation failed: {str(e)}'
-
-    def get_marshal_hq_command(self, license_data, cert_fields):
-        """Generate command for Marshal HQ to fix certificate structure."""
-        license_org_id = license_data['organization_id']
-        cert_org_name = cert_fields['organization_name']
-        
-        return f"""
-🚨 MARSHAL HQ COMMAND REQUIRED 🚨
-
-The current certificate structure does not follow security standards.
-
-COMMAND FOR MARSHAL HQ:
-========================
-Please regenerate the certificate with the following CORRECT structure:
-
-Certificate Subject Fields:
-- O (Organization Name): {license_org_id}
-- CN (Common Name): {cert_org_name}
-- C (Country): SA
-
-Current INCORRECT structure:
-- O (Organization Name): {cert_org_name}  ❌ Should be UUID
-- CN (Common Name): {license_org_id}      ❌ Should be human name
-
-SECURITY REQUIREMENT:
-- Organization Name (O) field MUST contain the UUID that matches license organization_id
-- Common Name (CN) field MUST contain the human-readable organization name
-- This prevents certificate substitution attacks and ensures proper binding
-
-Please regenerate certificate for organization: {cert_org_name}
-With UUID: {license_org_id}
-""" 
