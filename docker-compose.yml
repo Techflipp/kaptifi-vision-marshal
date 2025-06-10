@@ -1,8 +1,8 @@
 version: '3.8'
 services:
-  kaptifi-vision-marshal:
+  marshal:
     build: .
-    container_name: kaptifi-vision-marshal
+    container_name: marshal
     restart: always
     command: uvicorn api.main:app --host ${HOST} --port ${PORT} --workers 4 --timeout-keep-alive 60
     ports:
