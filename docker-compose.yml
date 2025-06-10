@@ -1,0 +1,18 @@
+version: '3.8'
+services:
+  marshal:
+    build: .
+    container_name: marshal
+    restart: always
+    command: uvicorn api.main:app --host ${HOST} --port ${PORT} --workers 4 --timeout-keep-alive 60
+    ports:
+      - "8500:${PORT}"
+    volumes:
+      - ./logs_data:/app/logs
+      - ./certificates_data:/app/certificates
+    env_file:
+      - .env
+
+volumes:
+  logs_data:
+  config_data:
