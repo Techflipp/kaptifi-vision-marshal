@@ -1,85 +1,85 @@
-# 🔒 Kaptifi Vision Marshal - Validation Analysis Summary
+# 🔒 Kaptifi Vision Marshal - Validation Analysis
 
-## ✅ COMPLETED TASKS
+## 🔍 SECURITY STANDARDS
 
-### 1. **Removed Auto-Extraction Logic** ✅
-- Validator now **requires separate certificate files**
-- No more auto-extraction from license files
-- Enforces proper security separation between license and certificate
+### Certificate Structure Requirements
+- **O (Organization Name)**: Must contain organization UUID
+- **CN (Common Name)**: Must contain human-readable organization name
+- **Organization ID**: Must match between license and certificate O field
 
-### 2. **Created Clean, Straightforward Validator** ✅
-- Removed complex logic and loops
-- Clear security standards documentation
-- Straightforward validation process
-- Proper error messages and security violation detection
+### Validation Process
+1. Certificate Validation
+   - Format verification
+   - Expiration check
+   - Organization identity verification
 
-### 3. **Identified Security Standard Violations** ✅
-- Analyzed certificate structure against security standards
-- Detected incorrect field mapping
-- Generated specific Marshal HQ commands
+2. License Validation
+   - Signature verification
+   - Expiration check
+   - Organization ID matching
+   - Module permissions verification
 
-## 🔍 SECURITY ANALYSIS RESULTS
+3. Security Checks
+   - Cryptographic signature validation
+   - Certificate-license binding verification
+   - Tamper detection
 
-### **Current Certificate Structure (Diriyah):**
-```
-Subject: C=SA,O=Diriyah,CN=7b519c2a-94b3-40b7-859e-82464c85a412
-```
+## 🛡️ SECURITY FEATURES
 
-### **License Structure:**
-```json
-{
-  "organization_id": "7b519c2a-94b3-40b7-859e-82464c85a412"
-}
-```
+### File Separation
+- Certificate and license must be separate files
+- No embedded certificates in license files
+- Clear separation of concerns
 
-### **Security Standards Expected:**
-- **O (Organization Name)**: Should contain UUID (`7b519c2a-94b3-40b7-859e-82464c85a412`)
-- **CN (Common Name)**: Should contain human name (`Diriyah`)
+### Field Validation
+- O field must contain UUID
+- CN field must contain human name
+- Organization ID must match between files
 
-### **Current Issues:**
-❌ **O field contains**: `Diriyah` (human name)  
-❌ **CN field contains**: `7b519c2a-94b3-40b7-859e-82464c85a412` (UUID)  
-❌ **Validation result**: FAILS (Organization ID mismatch)
-
-## 🚨 MARSHAL HQ COMMAND GENERATED
-
-The system has generated a specific command for Marshal HQ to regenerate the certificate with the correct structure:
-
-**File**: `MARSHAL_HQ_COMMAND.md`
-
-**Required Action**: Regenerate certificate with:
-- **O**: `7b519c2a-94b3-40b7-859e-82464c85a412` (UUID)
-- **CN**: `Diriyah` (Human name)
-
-## 🛡️ SECURITY BENEFITS
-
-### **After Fix:**
-✅ **Certificate-License Binding**: UUID in O field matches license organization_id  
-✅ **Anti-Tampering**: Prevents certificate substitution attacks  
-✅ **Standards Compliance**: Follows PKI security standards  
-✅ **Validation Success**: License validation will pass  
+### Cryptographic Security
+- PSS padding with SHA256
+- Certificate-based signature verification
+- Expiration checks on both certificate and license
 
 ## 📋 VALIDATOR FEATURES
 
-### **Security Standards Enforced:**
-1. **Separate Files**: Certificate and license must be separate files
-2. **Field Validation**: O field must contain UUID, CN field must contain human name
-3. **Signature Verification**: Cryptographic signature validation
-4. **Expiration Checks**: Certificate and license expiration validation
-5. **Anti-Substitution**: Certificate-license binding verification
+### Security Standards Enforced
+1. Separate Files
+   - Certificate and license must be separate files
+   - No auto-extraction from license files
 
-### **Backward Compatibility:**
-- Supports both legacy and secure signature formats
-- Clear migration path for existing licenses
-- Maintains API compatibility
+2. Field Validation
+   - O field must contain UUID
+   - CN field must contain human name
+   - Organization ID matching
+
+3. Signature Verification
+   - Cryptographic signature validation
+   - Certificate-based verification
+   - PSS padding with SHA256
+
+4. Expiration Checks
+   - Certificate validity period
+   - License expiration date
+   - UTC-based time validation
 
 ## 🎯 NEXT STEPS
 
-1. **Marshal HQ**: Regenerate certificate according to `MARSHAL_HQ_COMMAND.md`
-2. **Customer**: Replace `Diriyah_cert_public.pem` with new certificate
-3. **Validation**: Test with updated certificate
-4. **Deployment**: Deploy with corrected certificate structure
+1. **Certificate Structure**
+   - Ensure O field contains UUID
+   - Ensure CN field contains human name
+   - Verify organization ID matches
+
+2. **Deployment**
+   - Place files in correct locations
+   - Set proper file permissions
+   - Configure environment variables
+
+3. **Validation**
+   - Test with valid certificate
+   - Verify all security checks
+   - Monitor logs for issues
 
 ---
 
-**The validator is now clean, secure, and follows industry standards. The certificate structure issue has been clearly identified and specific remediation commands have been provided.** 
+**The validator enforces strict security standards and provides comprehensive validation of both certificate and license files.** 
