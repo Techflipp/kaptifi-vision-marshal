@@ -1,18 +1,16 @@
-# Kaptifi Vision Marshal - Customer Deployment
+# Kaptifi Vision Marshal - License Validation System
 
 ## Overview
 
-This is the **customer deployment** version of Kaptifi Vision Marshal - a license validation system for on-premise software deployments. This repository contains **only validation logic** and **no certificate or license generation capabilities** for security reasons.
+Kaptifi Vision Marshal is a secure license validation system for on-premise software deployments. This repository contains the validation engine and API endpoints for license verification.
 
 ## 🔒 Security Notice
 
-**Certificate and License Generation Removed**
-
-For security reasons, this customer deployment does **NOT** include:
-- ❌ Certificate generation capabilities
-- ❌ License generation capabilities  
-- ❌ Private key management
-- ❌ CA setup tools
+This deployment version does **NOT** include:
+- Certificate generation capabilities
+- License generation capabilities  
+- Private key management
+- CA setup tools
 
 All certificate and license generation is performed exclusively at **Kaptifi Marshal HQ**.
 
@@ -40,7 +38,7 @@ kaptifi-vision-marshal/
 │   ├── main.py                   # FastAPI application
 │   └── endpoints.py              # License validation endpoints
 ├── license/                      # License validation logic
-│   └── license_validator.py     # Core validation engine
+│   └── license_validator.py      # Core validation engine
 ├── helper/                       # Utility functions
 │   └── logger.py                 # Logging configuration
 ├── certificates_data/            # Customer license files
@@ -112,7 +110,7 @@ Returns detailed license validation information:
     "valid": true,
     "message": "License valid",
     "organization_id": "your-org-id",
-    "modules": ["counting", "demographics"],
+    "modules": ["module1", "module2"],
     "issued_on": "2024-01-01",
     "expiration": "2025-12-31"
 }
@@ -123,38 +121,20 @@ Returns detailed license validation information:
 The system performs comprehensive validation:
 
 ### 1. Certificate Validation
-- ✅ Certificate format verification
-- ✅ Certificate expiration check
-- ✅ Organization identity verification
+- Certificate format verification
+- Certificate expiration check
+- Organization identity verification
 
 ### 2. License Validation  
-- ✅ License signature verification
-- ✅ License expiration check
-- ✅ Organization ID matching
-- ✅ Module permissions verification
+- License signature verification
+- License expiration check
+- Organization ID matching
+- Module permissions verification
 
 ### 3. Security Checks
-- ✅ Cryptographic signature validation
-- ✅ Certificate-license binding verification
-- ✅ Tamper detection
-- ✅ Anti-forgery protection
-
-## 🛡️ Security Features
-
-### Backward Compatibility
-The validator supports both:
-- **Legacy Format**: License data only signatures (current)
-- **Secure Format**: Combined certificate + license signatures (future)
-
-### Anti-Tampering
-- Digital signatures prevent license modification
-- Certificate binding prevents substitution attacks
-- Organization ID verification ensures proper licensing
-
-### Offline Validation
-- No external dependencies required
-- Self-contained validation process
-- Works in air-gapped environments
+- Cryptographic signature validation
+- Certificate-license binding verification
+- Tamper detection
 
 ## 🔧 Configuration
 
@@ -223,19 +203,11 @@ chmod 644 certificates_data/*
 - Contact Kaptifi Marshal HQ for license renewal
 - Check system date/time accuracy
 
-### Getting Help
-
-For support:
-1. Check application logs in `logs_data/`
-2. Verify license status via API endpoint
-3. Contact Kaptifi Marshal HQ for license issues
-
 ## 📞 Support
 
 For license generation, renewal, or technical support:
-- 📧 Contact: Kaptifi Marshal HQ
-- 🌐 License Management: Use Marshal HQ Django application
-- 🔧 Technical Issues: Check logs and API endpoints
+- Contact: Kaptifi Marshal HQ
+- Technical Issues: Check logs and API endpoints
 
 ## 🔄 License Renewal
 
@@ -248,12 +220,7 @@ When your license approaches expiration:
 
 ## ⚠️ Important Security Notes
 
-- **Never attempt to generate certificates locally**
-- **Keep certificate files secure and backed up**
-- **Monitor license expiration dates**
-- **Report any validation issues immediately**
-- **Only use license files from official Kaptifi Marshal HQ**
-
----
-
-**This deployment contains only validation capabilities. All certificate and license generation is performed exclusively at Kaptifi Marshal HQ for maximum security.**
+- Keep certificate files secure and backed up
+- Monitor license expiration dates
+- Report any validation issues immediately
+- Only use license files from official Kaptifi Marshal HQ
